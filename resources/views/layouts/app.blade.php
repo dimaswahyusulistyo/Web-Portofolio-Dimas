@@ -16,58 +16,59 @@
 
     <title>Portfolio Dimas - @yield('title', 'Home')</title>
 </head>
+<body>
+    <!-- Floating Chat AI -->
+    <div id="chat-ai-container">
+        <button id="chat-ai-toggle" class="chat-ai-btn">
+            <i class="fas fa-robot"></i>
+        </button>
 
-<!-- Floating Chat AI -->
-<div id="chat-ai-container">
-    <button id="chat-ai-toggle" class="chat-ai-btn">
-        <i class="fas fa-robot"></i>
-    </button>
-
-    <div id="chat-bubble" class="chat-bubble">
-        <div class="bubble-content">
-            <div class="bubble-text">
-              <strong>Hai! 🤖</strong>
-              <p>Saya AI, bisa bantu jawab tentang Dimas atau apa saja!</p>
-            </div>
-        </div>
-        <div class="bubble-tail"></div>
-    </div>
-
-    <div id="chat-ai-box" class="chat-ai-box">
-        <div class="chat-ai-header">
-            <div class="header-content">
-                <div class="ai-avatar">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div class="header-text">
-                    <strong>Asisten AI Dimas</strong>
-                    <span class="status">Online</span>
+        <div id="chat-bubble" class="chat-bubble">
+            <div class="bubble-content">
+                <div class="bubble-text">
+                <strong>Hai! 🤖</strong>
+                <p>Saya AI, bisa bantu jawab tentang Dimas atau apa saja!</p>
                 </div>
             </div>
-            <button id="chat-ai-close" class="close-btn">
-                <i class="fas fa-times"></i>
-            </button>
+            <div class="bubble-tail"></div>
         </div>
-        <div class="chat-ai-body" id="chat-ai-body">
-            <div class="chat-message ai-message">
-                <div class="message-avatar">
-                    <i class="fas fa-robot"></i>
+
+        <div id="chat-ai-box" class="chat-ai-box">
+            <div class="chat-ai-header">
+                <div class="header-content">
+                    <div class="ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="header-text">
+                        <strong>Asisten AI Dimas</strong>
+                        <span class="status">Online</span>
+                    </div>
                 </div>
-                <div class="message-content">
-                    <p>Halo Tuan! 👋 Saya siap membantu menjawab pertanyaan Anda. Ada yang bisa saya bantu?</p>
-                </div>
-            </div>
-        </div>
-        <div class="chat-ai-footer">
-            <div class="input-container">
-                <input type="text" id="chat-ai-input" placeholder="Ketik pesan..." />
-                <button id="chat-ai-send" class="send-btn">
-                    <i class="fas fa-paper-plane"></i>
+                <button id="chat-ai-close" class="close-btn">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
+            <div class="chat-ai-body" id="chat-ai-body">
+                <div class="chat-message ai-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Halo Tuan! 👋 Saya siap membantu menjawab pertanyaan Anda. Ada yang bisa saya bantu?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-ai-footer">
+                <div class="input-container">
+                    <input type="text" id="chat-ai-input" placeholder="Ketik pesan..." />
+                    <button id="chat-ai-send" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</body>
 
 <style>
 /* CHAT AI STYLES */
