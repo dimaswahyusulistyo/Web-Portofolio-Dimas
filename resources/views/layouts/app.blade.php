@@ -1,18 +1,9 @@
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta name="theme-color" content="#2B2B35"/>
-    <link rel="shortcut icon" href="{{ asset('img/icon.png') }}" type="image/x-icon"/>
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/plugins/bootstrap.min.css') }}"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-    <link rel="stylesheet" href="{{ asset('css/plugins/swiper.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('css/plugins/fancybox.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}"/>
 
     <link rel="shortcut icon" href="/img/icon.png" type="image/x-icon"/>
     <link rel="stylesheet" href="/css/plugins/bootstrap.min.css"/>
@@ -23,7 +14,6 @@
     <title>Portfolio Dimas - @yield('title', 'Home')</title>
 </head>
 <body>
-    <!-- Floating Chat AI -->
     <div id="chat-ai-container">
         <button id="chat-ai-toggle" class="chat-ai-btn">
             <i class="fas fa-robot"></i>
@@ -77,7 +67,6 @@
 </body>
 
 <style>
-/* CHAT AI STYLES */
 #chat-ai-container {
   position: fixed;
   bottom: 20px;
@@ -174,7 +163,6 @@
   }
 }
 
-/* Toggle Button */
 .chat-ai-btn {
   background: linear-gradient(135deg, #ffc107, #ff9800);
   color: #fff;
@@ -196,7 +184,6 @@
   box-shadow: 0 8px 25px rgba(255, 193, 7, 0.6);
 }
 
-/* Toggle Button */
 .chat-ai-btn {
   background: linear-gradient(135deg, #ffc107, #ff9800);
   color: #fff;
@@ -471,7 +458,6 @@
 .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
 .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
 
-/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -494,7 +480,6 @@
   }
 }
 
-/* Responsive */
 @media (max-width: 480px) {
   .chat-ai-box {
     width: 320px;
@@ -507,7 +492,6 @@
   }
 }
 
-/* Search Suggestions Styles */
 .search-suggestions {
     background: white;
     border-radius: 15px;
@@ -574,7 +558,6 @@
     box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
 }
 
-/* Responsive adjustments */
 @media (max-width: 480px) {
     .suggestion-chips {
         gap: 6px;
@@ -587,184 +570,6 @@
 }
 </style>
 
-<!-- <script>
-class ChatAI {
-    constructor() {
-        this.isLoading = false;
-        this.init();
-    }
-
-    init() {
-        // Event listeners
-        document.getElementById("chat-ai-toggle").addEventListener("click", () => this.toggleChat());
-        document.getElementById("chat-ai-close").addEventListener("click", () => this.closeChat());
-        document.getElementById("chat-ai-send").addEventListener("click", () => this.sendMessage());
-        document.getElementById("chat-ai-input").addEventListener("keypress", (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
-        });
-
-        // Auto-focus input when chat opens
-        document.getElementById("chat-ai-toggle").addEventListener("click", () => {
-            setTimeout(() => {
-                document.getElementById("chat-ai-input").focus();
-            }, 300);
-        });
-    }
-
-    toggleChat() {
-        const chatBox = document.getElementById("chat-ai-box");
-        if (chatBox.style.display === "flex") {
-            this.closeChat();
-        } else {
-            this.openChat();
-        }
-    }
-
-    openChat() {
-        document.getElementById("chat-ai-box").style.display = "flex";
-        document.getElementById("chat-ai-input").focus();
-    }
-
-    closeChat() {
-        document.getElementById("chat-ai-box").style.display = "none";
-    }
-
-    async sendMessage() {
-        if (this.isLoading) return;
-
-        const input = document.getElementById("chat-ai-input");
-        const message = input.value.trim();
-        
-        if (!message) return;
-
-        // Clear input
-        input.value = '';
-        
-        // Add user message to chat
-        this.addMessage(message, 'user');
-        
-        // Show typing indicator
-        this.showTypingIndicator();
-        
-        this.isLoading = true;
-        document.getElementById("chat-ai-send").disabled = true;
-
-        try {
-            const response = await fetch("{{ route('chat.ai') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({ message })
-            });
-
-            const data = await response.json();
-
-            // Remove typing indicator
-            this.removeTypingIndicator();
-
-            if (data.status === 'success') {
-                this.addMessage(data.reply, 'ai');
-            } else {
-                this.addMessage('Maaf, terjadi kesalahan. Silakan coba lagi.', 'ai');
-            }
-
-        } catch (error) {
-            console.error('Chat error:', error);
-            this.removeTypingIndicator();
-            this.addMessage('Maaf, sedang ada gangguan. Silakan refresh halaman dan coba lagi.', 'ai');
-        } finally {
-            this.isLoading = false;
-            document.getElementById("chat-ai-send").disabled = false;
-            input.focus();
-        }
-    }
-
-    addMessage(content, sender) {
-        const chatBody = document.getElementById("chat-ai-body");
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}-message`;
-
-        const avatar = document.createElement('div');
-        avatar.className = 'message-avatar';
-        
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-
-        if (sender === 'user') {
-            avatar.innerHTML = '<i class="fas fa-user"></i>';
-            messageContent.innerHTML = `<p>${this.escapeHtml(content)}</p>`;
-            messageDiv.appendChild(messageContent);
-            messageDiv.appendChild(avatar);
-        } else {
-            avatar.innerHTML = '<i class="fas fa-robot"></i>';
-            messageContent.innerHTML = `<p>${this.formatMessage(content)}</p>`;
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(messageContent);
-        }
-
-        chatBody.appendChild(messageDiv);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-
-    showTypingIndicator() {
-        const chatBody = document.getElementById("chat-ai-body");
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'chat-message ai-message';
-        typingDiv.id = 'typing-indicator';
-
-        const avatar = document.createElement('div');
-        avatar.className = 'message-avatar';
-        avatar.innerHTML = '<i class="fas fa-robot"></i>';
-
-        const typingContent = document.createElement('div');
-        typingContent.className = 'typing-indicator';
-        typingContent.innerHTML = `
-            <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        `;
-
-        typingDiv.appendChild(avatar);
-        typingDiv.appendChild(typingContent);
-        chatBody.appendChild(typingDiv);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-
-    removeTypingIndicator() {
-        const typingIndicator = document.getElementById('typing-indicator');
-        if (typingIndicator) {
-            typingIndicator.remove();
-        }
-    }
-
-    escapeHtml(unsafe) {
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    formatMessage(text) {
-        // Convert line breaks to <br>
-        return this.escapeHtml(text).replace(/\n/g, '<br>');
-    }
-}
-
-// Initialize chat when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    new ChatAI();
-});
-</script> -->
 
 <script>
 class ChatAI {
@@ -868,7 +673,6 @@ class ChatAI {
     }
 
     init() {
-        // Event listeners
         document.getElementById("chat-ai-toggle").addEventListener("click", () => this.toggleChat());
         document.getElementById("chat-ai-close").addEventListener("click", () => this.closeChat());
         document.getElementById("chat-ai-send").addEventListener("click", () => this.sendMessage());
@@ -879,7 +683,6 @@ class ChatAI {
             }
         });
 
-        // Auto-focus input when chat opens
         document.getElementById("chat-ai-toggle").addEventListener("click", () => {
             setTimeout(() => {
                 document.getElementById("chat-ai-input").focus();
@@ -887,7 +690,6 @@ class ChatAI {
             }, 300);
         });
 
-        // Show suggestions when input is focused
         document.getElementById("chat-ai-input").addEventListener("focus", () => {
             this.showSearchSuggestions();
         });
@@ -978,23 +780,18 @@ class ChatAI {
         
         if (!message) return;
 
-        // Clear input and hide suggestions
         input.value = '';
         this.hideSearchSuggestions();
         
-        // Add user message to chat
         this.addMessage(message, 'user');
         
-        // Check for shortcuts first
         const shortcutResponse = this.checkShortcuts(message);
         if (shortcutResponse) {
             this.addMessage(shortcutResponse, 'ai');
-            // Show suggestions again after response
             setTimeout(() => this.showSearchSuggestions(), 500);
             return;
         }
-        
-        // Show typing indicator
+    
         this.showTypingIndicator();
         
         this.isLoading = true;
@@ -1013,7 +810,6 @@ class ChatAI {
 
             const data = await response.json();
 
-            // Remove typing indicator
             this.removeTypingIndicator();
 
             if (data.status === 'success') {
@@ -1031,7 +827,6 @@ class ChatAI {
             document.getElementById("chat-ai-send").disabled = false;
             input.focus();
             
-            // Show suggestions again after AI response
             setTimeout(() => this.showSearchSuggestions(), 1000);
         }
     }
@@ -1039,7 +834,6 @@ class ChatAI {
     checkShortcuts(message) {
         const lowerMessage = message.toLowerCase();
         
-        // Informasi Kontak
         if (lowerMessage.includes('kontak') || lowerMessage.includes('hubungi') || lowerMessage.includes('email') || lowerMessage.includes('telepon')) {
             return `📞 **Informasi Kontak Dimas:**\n
 • **Telepon:** ${this.userProfile.phone}
@@ -1049,7 +843,6 @@ class ChatAI {
 • **Lokasi:** ${this.userProfile.location}`;
         }
 
-        // Pendidikan
         if (lowerMessage.includes('pendidikan') || lowerMessage.includes('kuliah') || lowerMessage.includes('uns') || lowerMessage.includes('sebelas maret')) {
             return `🎓 **Pendidikan Dimas:**\n
 • **Institusi:** ${this.userProfile.education.institution}, ${this.userProfile.education.location}
@@ -1058,7 +851,6 @@ class ChatAI {
 • **IPK:** ${this.userProfile.education.gpa}`;
         }
 
-        // Skills & Teknologi
         if (lowerMessage.includes('skill') || lowerMessage.includes('teknologi') || lowerMessage.includes('kemampuan') || lowerMessage.includes('expertise') || lowerMessage.includes('vue') || lowerMessage.includes('laravel')) {
             return `💻 **Skills & Teknologi Dimas:**\n
 • **Frontend:** Vue.js, JavaScript, Bootstrap, UI/UX Design
@@ -1069,7 +861,6 @@ class ChatAI {
 *Teknologi utama: Vue.js, Laravel, PHP, JavaScript, Bootstrap*`;
         }
 
-        // Pengalaman Proyek
         if (lowerMessage.includes('proyek') || lowerMessage.includes('project') || lowerMessage.includes('portfolio') || lowerMessage.includes('aplikasi')) {
             let response = "🚀 **Proyek yang Pernah Dikerjakan:**\n\n";
             
@@ -1084,7 +875,6 @@ class ChatAI {
             return response;
         }
 
-        // Pengalaman Kerja
         if (lowerMessage.includes('pengalaman') || lowerMessage.includes('kerja') || lowerMessage.includes('pengalaman kerja') || lowerMessage.includes('sirekap')) {
             return `💼 **Pengalaman Kerja Dimas:**\n
 • **Posisi:** ${this.userProfile.experience[0].role}
@@ -1094,7 +884,6 @@ class ChatAI {
 • **Deskripsi:** ${this.userProfile.experience[0].description}`;
         }
 
-        // Sertifikasi
         if (lowerMessage.includes('sertifikasi') || lowerMessage.includes('sertifikat') || lowerMessage.includes('certification') || lowerMessage.includes('bnsp')) {
             return `📜 **Sertifikasi Dimas:**\n
 • **Judul:** ${this.userProfile.certification.title}
@@ -1102,13 +891,11 @@ class ChatAI {
 • **Masa Berlaku:** ${this.userProfile.certification.period}`;
         }
 
-        // Profil Singkat
         if (lowerMessage.includes('profil') || lowerMessage.includes('tentang saya') || lowerMessage.includes('tentang dimas') || lowerMessage.includes('siapa dimas')) {
             return `👨‍💻 **Profil Profesional Dimas:**\n
 Fresh Graduate D3 Teknik Informatika dengan IPK 3.88 dari Universitas Sebelas Maret. Memiliki keahlian dalam pengembangan aplikasi fullstack menggunakan Vue.js dan Laravel. Berpengalaman dalam mengembangkan sistem informasi untuk pemerintah daerah seperti aplikasi persuratan, monitoring, dan stunting.`;
         }
 
-        // Semua informasi
         if (lowerMessage.includes('semua') || lowerMessage.includes('semua info') || lowerMessage.includes('ringkasan')) {
             return `📋 **Ringkasan Profil Dimas Wahyu Sulistyo:**\n
 **🎓 Pendidikan:** D3 Teknik Informatika - UNS (IPK 3.88)
@@ -1142,7 +929,6 @@ Fresh Graduate D3 Teknik Informatika dengan IPK 3.88 dari Universitas Sebelas Ma
             messageDiv.appendChild(avatar);
         } else {
             avatar.innerHTML = '<i class="fas fa-robot"></i>';
-            // Format response dengan line breaks
             const formattedContent = this.formatProfileResponse(content);
             messageContent.innerHTML = formattedContent;
             messageDiv.appendChild(avatar);
@@ -1154,13 +940,10 @@ Fresh Graduate D3 Teknik Informatika dengan IPK 3.88 dari Universitas Sebelas Ma
     }
 
     formatProfileResponse(text) {
-        // Convert markdown-style formatting to HTML
         let formatted = this.escapeHtml(text);
         
-        // Convert **bold** to <strong>
         formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         
-        // Convert line breaks to <br> and handle lists
         formatted = formatted.replace(/\n/g, '<br>');
         formatted = formatted.replace(/•/g, '•');
         
@@ -1212,50 +995,35 @@ Fresh Graduate D3 Teknik Informatika dengan IPK 3.88 dari Universitas Sebelas Ma
 
 // Buat instance global untuk diakses oleh onclick
 const chatAI = new ChatAI();
-
-// Initialize chat when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Instance sudah dibuat di atas
 });
 </script>
 <body>
-    <!-- app -->
     <div class="art-app">
-        <!-- mobile top bar -->
         <div class="art-mobile-top-bar"></div>
 
-        <!-- app wrapper -->
         <div class="art-app-wrapper">
-            <!-- app container -->
             <div class="art-app-container">
-                <!-- Sidebar -->
                 @include('layouts.sidebar')
                 
-                <!-- content -->
                 <div class="art-content">
-                    <!-- curtain -->
                     <div class="art-curtain"></div>
 
-                    <!-- top background -->
                     <div class="art-top-bg" style="background-image: url({{ asset('img/bg.jpg') }})">
                         <div class="art-top-bg-overlay"></div>
                     </div>
 
-                    <!-- swup container -->
                     <div class="transition-fade" id="swup">
-                        <!-- Scroll frame harus di sini -->
                         <div id="scrollbar" class="art-scroll-frame">
                             @yield('content')
                         </div>
                     </div>
                 </div>
 
-                <!-- Navbar -->
                 @include('layouts.navbar')
             </div>
         </div>
 
-        <!-- preloader -->
         <div class="art-preloader">
             <div class="art-preloader-content">
                 <h4>Dimas Wahyu Sulistyo</h4>
@@ -1264,18 +1032,18 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script src="{{ asset('js/plugins/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/anime.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/swiper.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/progressbar.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/smooth-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/overscroll.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/typing.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/isotope.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/fancybox.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/swup.min.js') }}"></script>
-    <script src="{{ asset('js/main.js') }}"></script>
+    <script src="/js/plugins/jquery.min.js"></script>
+    <script src="/js/plugins/anime.min.js"></script>
+    <script src="/js/plugins/swiper.min.js"></script>
+    <script src="/js/plugins/progressbar.min.js"></script>
+    <script src="/js/plugins/smooth-scrollbar.min.js"></script>
+    <script src="/js/plugins/overscroll.min.js"></script>
+    <script src="/js/plugins/typing.min.js"></script>
+    <script src="/js/plugins/isotope.min.js"></script>
+    <script src="/js/plugins/fancybox.min.js"></script>
+    <script src="/js/plugins/swup.min.js"></script>
+
+    <script src="/js/main.js"></script>
 
     @stack('scripts')
 </body>
