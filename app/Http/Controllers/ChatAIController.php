@@ -28,10 +28,9 @@ class ChatAIController extends Controller
                 ]);
             }
 
-            // 🔥 FIX: Nonaktifkan SSL verification untuk development
             $response = Http::timeout(30)
                 ->withOptions([
-                    'verify' => false, // 🔥 NONAKTIFKAN SSL VERIFICATION
+                    'verify' => false,
                     'curl' => [
                         CURLOPT_SSL_VERIFYPEER => false,
                         CURLOPT_SSL_VERIFYHOST => false
