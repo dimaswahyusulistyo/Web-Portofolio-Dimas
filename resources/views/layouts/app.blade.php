@@ -774,63 +774,72 @@ class ChatAI {
     }
 
     async sendMessage() {
-        if (this.isLoading) return;
+    if (this.isLoading) return;
 
-        const input = document.getElementById("chat-ai-input");
-        const message = input.value.trim();
-        
-        if (!message) return;
-
-        input.value = '';
-        this.hideSearchSuggestions();
-        
-        this.addMessage(message, 'user');
-        
-        const shortcutResponse = this.checkShortcuts(message);
-        if (shortcutResponse) {
-            this.addMessage(shortcutResponse, 'ai');
-            setTimeout(() => this.showSearchSuggestions(), 500);
-            return;
-        }
+    const input = document.getElementById("chat-ai-input");
+    const message = input.value.trim();
     
-        this.showTypingIndicator();
-        
-        this.isLoading = true;
-        document.getElementById("chat-ai-send").disabled = true;
+    if (!message) return;
 
-        try {
-            const response = await fetch("{{ route('chat.ai') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({ message })
-            });
-
-            const data = await response.json();
-
-            this.removeTypingIndicator();
-
-            if (data.status === 'success') {
-                this.addMessage(data.reply, 'ai');
-            } else {
-                this.addMessage('Maaf, terjadi kesalahan. Silakan coba lagi.', 'ai');
-            }
-
-        } catch (error) {
-            console.error('Chat error:', error);
-            this.removeTypingIndicator();
-            this.addMessage('Maaf, sedang ada gangguan. Silakan refresh halaman dan coba lagi.', 'ai');
-        } finally {
-            this.isLoading = false;
-            document.getElementById("chat-ai-send").disabled = false;
-            input.focus();
-            
-            setTimeout(() => this.showSearchSuggestions(), 1000);
-        }
+    input.value = '';
+    this.hideSearchSuggestions();
+    
+    this.addMessage(message, 'user');
+    
+    const shortcutResponse = this.checkShortcuts(message);
+    if (shortcutResponse) {
+        this.addMessage(shortcutResponse, 'ai');
+        setTimeout(() => this.showSearchSuggestions(), 500);
+        return;
     }
+
+    this.showTypingIndicator();
+    
+    this.isLoading = true;
+    document.getElementById("chat-ai-send").disabled = true;
+
+    try {
+        const response = await fetch("/chat-ai", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ message })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        this.removeTypingIndicator();
+
+        if (data.status === 'success') {
+            this.addMessage(data.reply, 'ai');
+        } else {
+            this.addMessage(data.reply || 'Maaf, terjadi kesalahan. Silakan coba lagi.', 'ai');
+        }
+
+    } catch (error) {
+        console.error('Chat error:', error);
+        this.removeTypingIndicator();
+        
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+            this.addMessage('Koneksi terputus. Periksa koneksi internet Anda atau coba refresh halaman.', 'ai');
+        } else {
+            this.addMessage('Maaf, sedang ada gangguan. Silakan coba lagi dalam beberapa saat.', 'ai');
+        }
+    } finally {
+        this.isLoading = false;
+        document.getElementById("chat-ai-send").disabled = false;
+        input.focus();
+        
+        setTimeout(() => this.showSearchSuggestions(), 1000);
+    }
+}
 
     checkShortcuts(message) {
         const lowerMessage = message.toLowerCase();
